@@ -168,7 +168,7 @@ class KMedian:
 
 def get_centroid_label(centroids, y, predict):
     """
-    Returns the label of the centroid by counting the most frequent label in the cluster
+    Step 1: Assign each cluster the label that appears most often in the cluster
     :param centroids: cluster centroids
     :param y: the real label of the data
     :param predict: the predicted label of the data
@@ -184,9 +184,28 @@ def get_centroid_label(centroids, y, predict):
     return centroids_label
 
 
-def bcubed_score(centroid, y, predict):
+def merge_same_label_cluster(centroids_label, predict):
     """
-    Calculate the bcubed precision
+    Step 2: Merge the clusters with the same label
+    :param centroids_label:
+    :param predict:
+    :return: The prediction that has been merged with the same merged cluster
+    """
+    update_dict = {}
+    for i in range(len(centroids_label)):
+        update_dict[i] = []
+        for j in range(len(predict)):
+            if predict[j] == i:
+                update_dict[i].append(j)
+    for i in update_dict:
+        for j in update_dict[i]:
+            predict[j] = centroids_label[i]
+    return predict
+
+
+def bcubed_score_v1(centroid, y, predict):
+    """
+    Calculate the bcubed precision (Without Merging)
     :param centroid: cluster centroid
     :param y: the real label of the data
     :param predict: the predicted label of the data
@@ -212,7 +231,36 @@ def bcubed_score(centroid, y, predict):
     return np.mean(precision), np.mean(recall), np.mean(f_score)
 
 
-def plot_evaluation(k_schedule, precision, recall, f_score, title):
+def bcubed_score(centroid, y, predict):
+    """
+    Step 3: Calculate the BCubed score
+    Step 4: Compute macro-averaged BCubed score
+    :param centroid: cluster centroid
+    :param y: the real label of the data
+    :param predict: the predicted label of the data
+    :return: the bcubed precision, bcubed recall, F-score
+    """
+    centroid_label = get_centroid_label(centroid, y, predict)
+    predict = merge_same_label_cluster(centroid_label, predict)
+    precision, recall, f_score = [], [], []
+    for i in np.unique(predict):
+        current_cluster_index = np.array([j for j in range(len(predict)) if predict[j] == i])
+        current_cluster_labels = y[current_cluster_index]
+        correct = 0
+        for j in range(len(current_cluster_labels)):
+            if current_cluster_labels[j] == i:
+                correct += 1
+        r = correct / len(y[y == i])
+        p = correct / len(current_cluster_labels)
+        f_s = 2 * p * r / (p + r)
+        recall.append(r)
+        precision.append(p)
+        f_score.append(f_s)
+
+    return np.mean(precision), np.mean(recall), np.mean(f_score)
+
+
+def plot_evaluation(k_schedule, precision, recall, f_score, title, save=False):
     """
     Plot the evaluation results
     :param k_schedule: the k value
@@ -220,30 +268,30 @@ def plot_evaluation(k_schedule, precision, recall, f_score, title):
     :param recall: the recall list
     :param f_score: the f_score list
     :param title: the title of the plot
+    :param save: whether to save the plot
     """
     plt.figure()
-    plt.plot(k_schedule, precision, label='precision')
-    plt.plot(k_schedule, recall, label='recall')
-    plt.plot(k_schedule, f_score, label='f_score')
+    plt.plot(k_schedule, precision, label='Precision')
+    plt.plot(k_schedule, recall, label='Recall')
+    plt.plot(k_schedule, f_score, label='F-Score')
     plt.title(title)
     plt.xlabel('K')
     plt.ylabel('Score')
     plt.legend()
+    if save:
+        plt.savefig(title + '.png')
     plt.show()
+
 
 
 def l2_norm(x):
     """
     Normalize x with l2 distance
     """
-    return x / np.linalg.norm(x)
+    return x / (np.linalg.norm(x, axis=1, keepdims=True))
 
 
 def run_k_cluster():
-    # Hyper-parameters
-    seed = 1
-    k_schedule = [i for i in range(1, 10)]
-
     data_set = load_data()[0]
     y = data_set[:, -1]
     y = np.array([int(i) for i in y])
@@ -251,33 +299,41 @@ def run_k_cluster():
     x_norm = l2_norm(np.copy(x))
 
     # Config for Four runs
-    config = {"KMeans without normalization": [x, KMeans],
-              "KMeans with normalization": [x_norm, KMeans],
-              "KMedian without normalization": [x, KMedian],
-              "KMedian with normalization": [x_norm, KMedian]}
+    config = {
+        "K-Means without normalization": [x, KMeans],
+        "K-Means with normalization": [x_norm, KMeans],
+        "K-Median without normalization": [x, KMedian],
+        "K-Median with normalization": [x_norm, KMedian],
+    }
 
     for name, (data, algorithm) in config.items():
         precision_list, recall_list, f_score_list = [], [], []
-        for k in k_schedule:
-            model = algorithm(k)
 
-            predict = model.fit(data, seed=seed)
+        for k in K_SCHEDULE:
+            model = algorithm(k)
+            predict = model.fit(data, seed=SEED)
             precision, recall, f_score = bcubed_score(model.centroids, y, predict)
+
             precision_list.append(precision)
             recall_list.append(recall)
             f_score_list.append(f_score)
 
             print("-" * 50)
-            print("{} clusters {}".format(k, name))
             print(
+                "{} clusters {}\n"
                 "Precision: {}\n"
                 "Recall: {}\n"
-                "F_Score: {}".format(precision, recall, f_score)
+                "F-Score: {}".format(k, name, precision, recall, f_score)
             )
             print("-" * 50)
 
-        plot_evaluation(k_schedule, precision_list, recall_list, f_score_list, title=name)
+        plot_evaluation(K_SCHEDULE, precision_list, recall_list, f_score_list, title=name, save=True)
 
+
+# Hyper-parameters
+SEED = 1
+K_SCHEDULE = [i for i in range(1, 10)]
+np.random.seed(SEED)
 
 if __name__ == '__main__':
     run_k_cluster()
