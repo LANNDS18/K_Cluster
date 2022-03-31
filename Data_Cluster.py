@@ -69,6 +69,7 @@ class KMeans:
 
         # Run the algorithm
         while True:
+            labels = []
 
             for i in range(self.k):
                 classifications[i] = []
@@ -77,6 +78,7 @@ class KMeans:
                 distances = [self.l2_distance(feature_set, centroid) for centroid in self.centroids]
                 classification = distances.index(min(distances))
                 classifications[classification].append(feature_set)
+                labels.append(classification)
 
             prev_centroids = np.array(self.centroids)
 
@@ -92,11 +94,6 @@ class KMeans:
                     optimized = False
 
             if optimized:
-                labels = []
-                for feature_set in data:
-                    distances = [self.l2_distance(feature_set, centroid) for centroid in self.centroids]
-                    classification = distances.index(min(distances))
-                    labels.append(classification)
                 return labels
 
     @staticmethod
@@ -130,6 +127,7 @@ class KMedians:
 
         # Run the algorithm
         while True:
+            labels = []
 
             for i in range(self.k):
                 classifications[i] = []
@@ -138,6 +136,7 @@ class KMedians:
                 distances = [self.l1_distance(feature_set, centroid) for centroid in self.centroids]
                 classification = distances.index(min(distances))
                 classifications[classification].append(feature_set)
+                labels.append(classification)
 
             prev_centroids = np.array(self.centroids)
 
@@ -153,11 +152,6 @@ class KMedians:
                     optimized = False
 
             if optimized:
-                labels = []
-                for feature_set in data:
-                    distances = [self.l1_distance(feature_set, centroid) for centroid in self.centroids]
-                    classification = distances.index(min(distances))
-                    labels.append(classification)
                 return labels
 
     @staticmethod
