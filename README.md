@@ -1,5 +1,5 @@
 # Data Cluster
-## COMP338 Assignment 2: implementing the k-means and k-medians clustering algorithms
+## COMP337 Assignment 2: implementing the k-means and k-medians clustering algorithms
 
 ## 1. k-means and k-medians clustering with B-CUBED evaluation
 This project is a simple implementation of k-means and k-medians. The k-means and k-medians algorithm can be used to cluster data points into k clusters. 
@@ -18,7 +18,7 @@ The structure of this project is as follows:
 ├── K-Means without normalization.png
 ├── K-Medians with normalization.png
 ├── K-Medians without normalization.png
-├── K_Cluster.py
+├── Data_Cluster.py
 └── README.md
 
 ```
@@ -67,7 +67,7 @@ n(1-9) clusters
 Precision: 0.919546511597592
 Recall: 0.516843360757367
 F-Score: 0.6241404710659718
- ----------------------------------------------------
+-------------------------------------------------------
 ```
 Meanwhile, the plot results are saved into four .png files.
 
