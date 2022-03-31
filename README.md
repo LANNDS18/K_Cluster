@@ -38,7 +38,7 @@ Install pip: `curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py`
 
 Install numpy: `python3 -m pip install numpy`
 
--matplotlib 1.5.x or later
+- matplotlib 3.5.x or later
 
 Install matplotlib: `python3 -m pip install matplotlib`
 
