@@ -2,7 +2,7 @@
 ## COMP338 Assignment 2: implementing the k-means and k-medians clustering algorithms
 
 ## 1. k-means and k-medians clustering with B-CUBED evaluation
-This project is a simple implementation of k-means and k-medians. The k-means and k-median algorithm can be used to cluster data points into k clusters. 
+This project is a simple implementation of k-means and k-medians. The k-means and k-medians algorithm can be used to cluster data points into k clusters. 
 The k-means and k-medians algorithm are greedy algorithms that assign each data point to the cluster that is closest to them. 
 The dataset used is the unzipped CA2data.zip file. The CA2data folder contains four classes of files.
 
@@ -16,8 +16,8 @@ The structure of this project is as follows:
 │   └── veggies
 ├── K-Means with normalization.png
 ├── K-Means without normalization.png
-├── K-Median with normalization.png
-├── K-Median without normalization.png
+├── K-Medians with normalization.png
+├── K-Medians without normalization.png
 ├── K_Cluster.py
 └── README.md
 
@@ -45,44 +45,31 @@ Install matplotlib: `python3 -m pip install matplotlib`
 ## 3. Run
 After setting up the environment as last section shows, run the following command to run the program:
 
-`python3 main.py`
+`python3 Data_Cluster.py`
 
 The program will run in the background and will print the results to the console.
+The plot results will be saved into four .png files.
 
 ## 4. Default Hyperparameter
 
 ```
-np.random.seed(1)                       # Shuffle the data with the same seed to make the results reproducible
-LEARNING_RATE = 1e-2                    # Learning rate for training single-layer perceptron
-EPOCH = 20                              # Number of epochs for training
-L2_REG = [0.01, 0.1, 1.0, 10.0, 100.0]  # 5 different L2 regularization parameters
-SHUFFLE = True                          # Shuffle the data before each epoch which is used to avoid overfitting
+SEED = 1                                     # Random seed for reproducibility
+K_SCHEDULE = [i for i in range(1, 10)]       # The K values will be used in the k-means and k-medians algorithm
 ```
 
 ## 5. Results
 
-The result is output to the console as the sequence of question. The format is as follows:
+The terminal output for each algorithm in different K with or without normalization is as follows:
 
 ```
-Information
- ----------------------------------------------------------------------------------------------------
-The number of weight/bias updates: n
-...
-Train accuracy between a and b: xx.xx% (for binary classification)
-...
-Overall train accuracy: xx.xx% (for multiclass classification)
-...
-----------------------------------------------------------------------------------------------------
-Test accuracy between a and b: xx.xx% (for binary classification)
-...
-Overall test accuracy: xx.xx% (for both binary and multiclass classification)
+--- K-Medians(K-Means) with(without) normalization ---
+n(1-9) clusters
+Precision: 0.919546511597592
+Recall: 0.516843360757367
+F-Score: 0.6241404710659718
+ ----------------------------------------------------
 ```
-The number of weight/bias updates is the number of updates of the weight/bias in the training process, which is used to 
-determine how difficult the training is. The accuracy is the percentage of the correct predictions. Training accuracy
-can reflect the fitting of the model to the training data. The test accuracy is the accuracy of the model on the test.
-
-For question 3, the overall test accuracy is the average accuracy for the all binary pairs. For question 4 and 5, overall
-test accuracy is the average accuracy is the accuracy between all y_true and y_pred for all classes.
+Meanwhile, the plot results are saved into four .png files.
 
 ## 6. Author
 Name: Wuwei Zhang ([@LANNDS18](https://github.com/LANNDS18))
