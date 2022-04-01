@@ -167,7 +167,7 @@ def bcubed_score(y, predict):
     :param predict: the predicted label of the data
     :return: the bcubed precision, bcubed recall, F-score
     """
-    precision, recall, f_score = [], [], []
+    precision, recall = [], []
     for index, instance in enumerate(predict):
         # all indices of all instances in the cluster
         cluster_base_index = [i for i, x in enumerate(predict) if x == instance]
@@ -177,12 +177,10 @@ def bcubed_score(y, predict):
         intersection_index = list(set(cluster_base_index).intersection(set(recall_base_index)))
         p = len(intersection_index) / len(cluster_base_index)
         r = len(intersection_index) / len(recall_base_index)
-        f = 2 * p * r / (p + r)
         precision.append(p)
         recall.append(r)
-        f_score.append(f)
-
-    return np.mean(precision), np.mean(recall), np.mean(f_score)
+    f_score = 2 * np.mean(precision) * np.mean(recall) / (np.mean(precision) + np.mean(recall))
+    return np.mean(precision), np.mean(recall), f_score
 
 
 def plot_evaluation(k_schedule, precision, recall, f_score, title, save=False):
